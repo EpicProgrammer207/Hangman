@@ -25,7 +25,7 @@ public class HangMan implements KeyListener {
 	int numOfWordsSolved = 0;
 	int numOfWords = 0;
 	ArrayList<String> list = new ArrayList<>();
-
+ArrayList<String> list2 = new ArrayList<>();
 	public static void main(String[] args) {
 		HangMan h = new HangMan();
 		h.start();
@@ -44,9 +44,13 @@ public class HangMan implements KeyListener {
 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader("src/dictionary.txt"));
-			for (int i = 0; i < numOfWords; i++) {
+			for (int i = 0; i < 2999; i++) {
 				String line = br.readLine();
-				list.add(line);
+				list2.add(line);
+			}
+			for(int j = 0; j<numOfWords; j++) {
+				int g = new Random().nextInt(list2.size());
+				list.add(list2.get(g));
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -87,15 +91,19 @@ public class HangMan implements KeyListener {
 		// TODO Auto-generated method stub
 		boolean b = false;
 		for (int k = 0; k < string.length(); k++) {
-			char c = st.charAt(k);
-			if (e.getKeyChar() == string.charAt(k)) {
-				c = string.charAt(k);
-				st.replace(st.charAt(k), c);
+			char[] list = string.toLowerCase().toCharArray();
+			char[] list2 = st.toCharArray();
+			if (e.getKeyChar() == list[k]) {
+			list2[k] = e.getKeyChar();
+			st = new String(list2);
 				b = true;
 				
 			}
 		}
 		label.setText(st);
+		panel.add(label);
+		frame.add(panel);
+		frame.pack();
 		frame.repaint();
 		if (!b) {
 			lives -= 1;
@@ -103,19 +111,34 @@ public class HangMan implements KeyListener {
 			label2.setText("LIVES LEFT: " + lives);
 			frame.repaint();
 			if (lives == 0) {
-				System.out.println("GAME OVER");
+				System.out.println("GAME OVER! THE WORD YOU MISSED WAS " + string);
 				System.exit(0);
 			}
 		}
-		if (st == string) {
+		if (st.equals(string)) {
 			numOfWordsSolved += 1;
-			JOptionPane.showMessageDialog(null, "You solved this word! Onto the next one!");
-			st = s.pop();
+			if(s.size()>0) {
+				JOptionPane.showMessageDialog(null, "You solved this word! Onto the next one!");
+			string = s.pop();
+			st = "";
+			for(int i =0; i<string.length(); i++) {
+				st+= "_";
+			}
+			lives = 9;
+			label.setText(st);
+			label2.setText("LIVES LEFT: " + lives);
+			panel.add(label);
+			panel.add(label2);
+			frame.add(panel);
+			frame.pack();
+			frame.repaint();
+			}
+			else {
+				frame.setVisible(false);
+				JOptionPane.showMessageDialog(null, "You Win! Nice Job!");
+			}
 		}
-		if (numOfWordsSolved == numOfWords) {
-			System.out.println("GG! You win!");
-			System.exit(0);
-		}
+		
 	}
 
 	@Override
